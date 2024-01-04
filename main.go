@@ -32,5 +32,7 @@ func main() {
 
 func v1Router() http.Handler {
 	r := chi.NewRouter()
+	r.Get("/readiness", ReadinessHandler)
+	r.Get("/err", ErrorHandler)
 	return r
 }
