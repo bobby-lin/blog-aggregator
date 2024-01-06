@@ -45,5 +45,6 @@ func (cfg *apiConfig) v1Router() http.Handler {
 	r.Get("/readiness", ReadinessHandler)
 	r.Get("/err", ErrorHandler)
 	r.Post("/users", cfg.CreateUserHandler)
+	r.Get("/users", cfg.GetUserHandler)
 	return r
 }
