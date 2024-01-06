@@ -52,8 +52,5 @@ func (cfg *apiConfig) CreateUserHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	dat, _ := json.Marshal(user)
-	w.Write(dat)
+	utils.RespondWithJSON(w, http.StatusOK, user)
 }
