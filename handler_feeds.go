@@ -10,6 +10,19 @@ import (
 	"time"
 )
 
+func (cfg *apiConfig) GetFeedHandler(w http.ResponseWriter, r *http.Request) {
+	feeds, err := cfg.DB.SelectFeed(context.Background())
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, "fail to get all feeds")
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	dat, _ := json.Marshal(feeds)
+	w.Write(dat)
+}
+
 func (cfg *apiConfig) CreateFeedHandler(w http.ResponseWriter, r *http.Request, u database.User) {
 	type requestBody struct {
 		Name string `json:"name"`

@@ -50,6 +50,7 @@ func (cfg *apiConfig) v1Router() http.Handler {
 	r.Post("/users", cfg.CreateUserHandler)
 	r.Get("/users", cfg.middlewareAuth(cfg.GetUserHandler))
 	r.Post("/feeds", cfg.middlewareAuth(cfg.CreateFeedHandler))
+	r.Get("/feeds", cfg.GetFeedHandler)
 	return r
 }
 
