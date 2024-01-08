@@ -14,7 +14,7 @@ import (
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (id, created_at, updated_at, name)
-VALUES ($1, $2, $3, $4)
+VALUES ($1, $2, $3, $4) -- we don't insert API key (autogenerate with default)
 RETURNING id, name, created_at, updated_at, api_key
 `
 

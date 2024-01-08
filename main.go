@@ -46,5 +46,6 @@ func (cfg *apiConfig) v1Router() http.Handler {
 	r.Get("/err", ErrorHandler)
 	r.Post("/users", cfg.CreateUserHandler)
 	r.Get("/users", cfg.GetUserHandler)
+	r.Post("/feeds", cfg.CreateFeedHandler)
 	return r
 }
