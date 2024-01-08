@@ -7,11 +7,10 @@ import (
 	"github.com/bobby-lin/blog-aggregator/internal/utils"
 	"github.com/google/uuid"
 	"net/http"
-	"strings"
 	"time"
 )
 
-func (cfg *apiConfig) CreateFeedHandler(w http.ResponseWriter, r *http.Request) {
+func (cfg *apiConfig) CreateFeedHandler(w http.ResponseWriter, r *http.Request, u database.User) {
 	type requestBody struct {
 		Name string `json:"name"`
 		Url  string `json:"url"`
@@ -27,9 +26,6 @@ func (cfg *apiConfig) CreateFeedHandler(w http.ResponseWriter, r *http.Request) 
 
 	ctx := context.Background()
 
-	apiKey := strings.Replace(r.Header.Get("Authorization"), "ApiKey ", "", 1)
-	user, err := cfg.DB.SelectUser(ctx, apiKey)
-
 	id, err := uuid.NewUUID()
 
 	feedParam := database.CreateFeedParams{
@@ -38,7 +34,7 @@ func (cfg *apiConfig) CreateFeedHandler(w http.ResponseWriter, r *http.Request) 
 		UpdatedAt: time.Now(),
 		Name:      reqBody.Name,
 		Url:       reqBody.Url,
-		UserID:    user.ID,
+		UserID:    u.ID,
 	}
 
 	f, err := cfg.DB.CreateFeed(ctx, feedParam)

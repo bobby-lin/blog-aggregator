@@ -7,21 +7,11 @@ import (
 	"github.com/bobby-lin/blog-aggregator/internal/utils"
 	"github.com/google/uuid"
 	"net/http"
-	"strings"
 	"time"
 )
 
-func (cfg *apiConfig) GetUserHandler(w http.ResponseWriter, r *http.Request) {
-	apiKey := strings.Replace(r.Header.Get("Authorization"), "ApiKey ", "", 1)
-	ctx := context.Background()
-
-	user, err := cfg.DB.SelectUser(ctx, apiKey)
-	if err != nil {
-		utils.RespondWithError(w, http.StatusUnauthorized, "invalid api key")
-		return
-	}
-
-	utils.RespondWithJSON(w, http.StatusOK, user)
+func (cfg *apiConfig) GetUserHandler(w http.ResponseWriter, r *http.Request, u database.User) {
+	utils.RespondWithJSON(w, http.StatusOK, u)
 }
 
 func (cfg *apiConfig) CreateUserHandler(w http.ResponseWriter, r *http.Request) {

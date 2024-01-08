@@ -1,9 +1,12 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"github.com/bobby-lin/blog-aggregator/internal/database"
+	"github.com/bobby-lin/blog-aggregator/internal/utils"
 	_ "github.com/lib/pq"
+	"strings"
 )
 
 import (
@@ -45,7 +48,25 @@ func (cfg *apiConfig) v1Router() http.Handler {
 	r.Get("/readiness", ReadinessHandler)
 	r.Get("/err", ErrorHandler)
 	r.Post("/users", cfg.CreateUserHandler)
-	r.Get("/users", cfg.GetUserHandler)
-	r.Post("/feeds", cfg.CreateFeedHandler)
+	r.Get("/users", cfg.middlewareAuth(cfg.GetUserHandler))
+	r.Post("/feeds", cfg.middlewareAuth(cfg.CreateFeedHandler))
 	return r
+}
+
+type authedHandler func(http.ResponseWriter, *http.Request, database.User)
+
+func (cfg *apiConfig) middlewareAuth(handler authedHandler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Authenticates request
+		apiKey := strings.Replace(r.Header.Get("Authorization"), "ApiKey ", "", 1)
+		ctx := context.Background()
+		user, err := cfg.DB.SelectUser(ctx, apiKey)
+		if err != nil {
+			utils.RespondWithError(w, http.StatusUnauthorized, "invalid api key")
+			return
+		}
+
+		// Call the next handler
+		handler(w, r, user)
+	}
 }
