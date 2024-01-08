@@ -33,6 +33,7 @@ func (cfg *apiConfig) CreateUserHandler(w http.ResponseWriter, r *http.Request) 
 	reqBody := requestBody{}
 	err := dec.Decode(&reqBody)
 	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, "fail to create user")
 		return
 	}
 
