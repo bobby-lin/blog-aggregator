@@ -50,6 +50,7 @@ func (cfg *apiConfig) CreateUserHandler(w http.ResponseWriter, r *http.Request) 
 
 	user, err := cfg.DB.CreateUser(ctx, userParams)
 	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, "fail to create user")
 		return
 	}
 
