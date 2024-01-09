@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"github.com/bobby-lin/blog-aggregator/api"
 	"github.com/bobby-lin/blog-aggregator/internal/database"
 	"github.com/bobby-lin/blog-aggregator/internal/utils"
 	"github.com/google/uuid"
@@ -17,10 +18,10 @@ func (cfg *apiConfig) GetFeedHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responseFeeds := make([]utils.Feed, len(feeds))
+	responseFeeds := make([]api.Feed, len(feeds))
 
 	for i, v := range feeds {
-		responseFeeds[i] = utils.DatabaseFeedToFeed(v)
+		responseFeeds[i] = api.DatabaseFeedToFeed(v)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -77,14 +78,14 @@ func (cfg *apiConfig) CreateFeedHandler(w http.ResponseWriter, r *http.Request, 
 	}
 
 	type responseBody struct {
-		Feed       utils.Feed            `json:"feed"`
+		Feed       api.Feed              `json:"feed"`
 		FeedFollow database.FeedFollower `json:"feed_follow"`
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	dat, _ := json.Marshal(responseBody{
-		Feed:       utils.DatabaseFeedToFeed(f),
+		Feed:       api.DatabaseFeedToFeed(f),
 		FeedFollow: follower,
 	})
 

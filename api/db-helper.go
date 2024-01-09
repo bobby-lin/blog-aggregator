@@ -1,4 +1,4 @@
-package utils
+package api
 
 import (
 	"github.com/bobby-lin/blog-aggregator/internal/database"
