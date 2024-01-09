@@ -56,8 +56,31 @@ func (cfg *apiConfig) CreateFeedHandler(w http.ResponseWriter, r *http.Request, 
 		return
 	}
 
+	ffid, err := uuid.NewUUID()
+
+	// Create a feed follow
+	follower, err := cfg.DB.CreateFeedFollower(ctx, database.CreateFeedFollowerParams{
+		ID:        ffid,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		FeedID:    f.ID,
+		UserID:    u.ID,
+	})
+	if err != nil {
+		return
+	}
+
+	type responseBody struct {
+		Feed       database.Feed         `json:"feed"`
+		FeedFollow database.FeedFollower `json:"feed_follow"`
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	dat, _ := json.Marshal(f)
+	dat, _ := json.Marshal(responseBody{
+		Feed:       f,
+		FeedFollow: follower,
+	})
+
 	w.Write(dat)
 }
