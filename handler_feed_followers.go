@@ -53,3 +53,16 @@ func (cfg *apiConfig) CreateFeedFollowerHandler(w http.ResponseWriter, r *http.R
 	dat, _ := json.Marshal(ff)
 	w.Write(dat)
 }
+
+func (cfg *apiConfig) GetFeedFollowersHandler(w http.ResponseWriter, r *http.Request, user database.User) {
+	ff, err := cfg.DB.GetFeedFollowers(context.Background(), user.ID)
+	if err != nil {
+		log.Println(err)
+		utils.RespondWithError(w, http.StatusNotFound, "fail to get user feed follows")
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	dat, err := json.Marshal(ff)
+	w.Write(dat)
+}

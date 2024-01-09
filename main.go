@@ -55,6 +55,8 @@ func (cfg *apiConfig) v1Router() http.Handler {
 	r.Get("/feeds", cfg.GetFeedHandler)
 
 	r.Post("/feed_follows", cfg.middlewareAuth(cfg.CreateFeedFollowerHandler))
+	r.Get("/feed_follows", cfg.middlewareAuth(cfg.GetFeedFollowersHandler))
+
 	return r
 }
 
