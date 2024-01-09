@@ -47,10 +47,14 @@ func (cfg *apiConfig) v1Router() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/readiness", ReadinessHandler)
 	r.Get("/err", ErrorHandler)
+
 	r.Post("/users", cfg.CreateUserHandler)
 	r.Get("/users", cfg.middlewareAuth(cfg.GetUserHandler))
+
 	r.Post("/feeds", cfg.middlewareAuth(cfg.CreateFeedHandler))
 	r.Get("/feeds", cfg.GetFeedHandler)
+
+	r.Post("/feed_follows", cfg.middlewareAuth(cfg.CreateFeedFollowerHandler))
 	return r
 }
 
