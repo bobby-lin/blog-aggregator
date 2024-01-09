@@ -17,9 +17,15 @@ func (cfg *apiConfig) GetFeedHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	responseFeeds := make([]utils.Feed, len(feeds))
+
+	for i, v := range feeds {
+		responseFeeds[i] = utils.DatabaseFeedToFeed(v)
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	dat, _ := json.Marshal(feeds)
+	dat, _ := json.Marshal(responseFeeds)
 	w.Write(dat)
 }
 
@@ -71,14 +77,14 @@ func (cfg *apiConfig) CreateFeedHandler(w http.ResponseWriter, r *http.Request, 
 	}
 
 	type responseBody struct {
-		Feed       database.Feed         `json:"feed"`
+		Feed       utils.Feed            `json:"feed"`
 		FeedFollow database.FeedFollower `json:"feed_follow"`
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	dat, _ := json.Marshal(responseBody{
-		Feed:       f,
+		Feed:       utils.DatabaseFeedToFeed(f),
 		FeedFollow: follower,
 	})
 
