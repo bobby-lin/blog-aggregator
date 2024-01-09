@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/bobby-lin/blog-aggregator/internal/database"
 	"github.com/bobby-lin/blog-aggregator/internal/utils"
+	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"log"
 	"net/http"
@@ -65,4 +66,19 @@ func (cfg *apiConfig) GetFeedFollowersHandler(w http.ResponseWriter, r *http.Req
 	w.WriteHeader(http.StatusOK)
 	dat, err := json.Marshal(ff)
 	w.Write(dat)
+}
+
+func (cfg *apiConfig) DeleteFeedFollowsHandler(w http.ResponseWriter, r *http.Request, user database.User) {
+	feedFollowID, _ := uuid.Parse(chi.URLParam(r, "feedFollowID"))
+
+	ff, err := cfg.DB.DeleteFeedFollower(context.Background(), feedFollowID)
+
+	if err != nil {
+		log.Println(err)
+		utils.RespondWithError(w, http.StatusBadRequest, "fail to delete feed follow")
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	log.Println("Deleted feed follow: ", ff)
 }
