@@ -84,3 +84,41 @@ func (q *Queries) SelectFeed(ctx context.Context) ([]Feed, error) {
 	}
 	return items, nil
 }
+
+const selectNextFeedsToFetch = `-- name: SelectNextFeedsToFetch :many
+SELECT id, created_at, updated_at, name, url, user_id, last_fetched_at
+FROM  feeds
+ORDER BY feeds.last_fetched_at NULLS FIRST
+LIMIT $1
+`
+
+func (q *Queries) SelectNextFeedsToFetch(ctx context.Context, limit int32) ([]Feed, error) {
+	rows, err := q.db.QueryContext(ctx, selectNextFeedsToFetch, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Feed
+	for rows.Next() {
+		var i Feed
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Name,
+			&i.Url,
+			&i.UserID,
+			&i.LastFetchedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

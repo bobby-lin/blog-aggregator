@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"github.com/bobby-lin/blog-aggregator/internal/database"
 	"github.com/bobby-lin/blog-aggregator/internal/utils"
+	"github.com/bobby-lin/blog-aggregator/worker"
 	_ "github.com/lib/pq"
 	"strings"
 )
@@ -26,6 +27,13 @@ func main() {
 	dbURL := os.Getenv("DB_STRING")
 	db, err := sql.Open("postgres", dbURL)
 	cfg := apiConfig{DB: database.New(db)}
+
+	w := worker.Worker{
+		DB:        cfg.DB,
+		FetchSize: 3,
+	}
+
+	w.Start()
 
 	r := chi.NewRouter()
 	r.Use(cors.Handler(cors.Options{

@@ -6,3 +6,9 @@ RETURNING *;
 -- name: SelectFeed :many
 SELECT *
 FROM feeds;
+
+-- name: SelectNextFeedsToFetch :many
+SELECT *
+FROM  feeds
+ORDER BY feeds.last_fetched_at NULLS FIRST
+LIMIT $1;
