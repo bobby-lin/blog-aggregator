@@ -1,7 +1,6 @@
 package worker
 
 import (
-	"fmt"
 	"github.com/bobby-lin/blog-aggregator/internal/database"
 	"log"
 )
@@ -13,5 +12,6 @@ type Worker struct {
 
 func (w Worker) Start() {
 	log.Println("starting worker")
-	fmt.Println(w.GetNextFeedsToFetch(w.FetchSize))
+	feedBatch, _ := w.GetNextFeedsToFetch(w.FetchSize)
+	w.MarkFeedFetched(feedBatch[0])
 }
