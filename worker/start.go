@@ -3,6 +3,7 @@ package worker
 import (
 	"github.com/bobby-lin/blog-aggregator/internal/database"
 	"log"
+	"time"
 )
 
 type Worker struct {
@@ -12,6 +13,6 @@ type Worker struct {
 
 func (w Worker) Start() {
 	log.Println("starting worker")
-	feedBatch, _ := w.GetNextFeedsToFetch(w.FetchSize)
-	w.MarkFeedFetched(feedBatch[0])
+	interval := 60 * time.Second
+	go w.Loop(interval)
 }

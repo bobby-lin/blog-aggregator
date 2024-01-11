@@ -11,7 +11,6 @@ import (
 )
 
 import (
-	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
@@ -43,7 +42,7 @@ func main() {
 
 	r.Mount("/v1", cfg.v1Router())
 
-	fmt.Println("The server is starting on port", port)
+	log.Println("server is starting on port", port)
 	err = http.ListenAndServe(":"+port, r)
 	if err != nil {
 		log.Fatal(err)

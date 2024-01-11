@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"sync"
 	"time"
 )
 
@@ -28,7 +29,6 @@ func (w Worker) MarkFeedFetched(feed database.Feed) (database.Feed, error) {
 		return database.Feed{}, err
 	}
 
-	log.Println("Updated feed " + updatedFeed.ID.String() + " at " + updatedFeed.LastFetchedAt.Time.GoString())
 	return updatedFeed, nil
 }
 
@@ -51,7 +51,11 @@ type FeedRss struct {
 }
 
 func FetchDataFromFeed(url string) (FeedRss, error) {
-	resp, _ := http.Get(url)
+	resp, err := http.Get(url)
+	if err != nil {
+		return FeedRss{}, err
+	}
+
 	rss := FeedRss{}
 	b, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -64,4 +68,36 @@ func FetchDataFromFeed(url string) (FeedRss, error) {
 	}
 
 	return rss, nil
+}
+
+func (w Worker) Loop(interval time.Duration) {
+	ticker := time.NewTicker(interval)
+	for range ticker.C {
+		feedBatch, _ := w.DB.SelectNextFeedsToFetch(context.Background(), w.FetchSize)
+
+		wg := sync.WaitGroup{}
+
+		for _, v := range feedBatch {
+			wg.Add(1)
+			v := v // intermediate variable?
+
+			go func() {
+				defer wg.Done()
+				feedRss, err := FetchDataFromFeed(v.Url)
+				if err != nil {
+					log.Println(err)
+				}
+
+				_, err = w.MarkFeedFetched(v)
+				if err != nil {
+					log.Println(err)
+				}
+
+				log.Print(feedRss.Channel.Title)
+			}()
+		}
+
+		wg.Wait()
+	}
+
 }
