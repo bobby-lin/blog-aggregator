@@ -13,6 +13,6 @@ type Worker struct {
 
 func (w Worker) Start() {
 	log.Println("starting worker")
-	interval := 60 * time.Second
+	interval := 10 * time.Second
 	go w.Loop(interval)
 }
