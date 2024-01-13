@@ -64,6 +64,8 @@ func (cfg *apiConfig) v1Router() http.Handler {
 	r.Post("/feed_follows", cfg.middlewareAuth(cfg.CreateFeedFollowerHandler))
 	r.Get("/feed_follows", cfg.middlewareAuth(cfg.GetFeedFollowersHandler))
 	r.Delete("/feed_follows/{feedFollowID}", cfg.middlewareAuth(cfg.DeleteFeedFollowsHandler))
+
+	r.Get("/posts", cfg.middlewareAuth(cfg.GetUserPosts))
 	return r
 }
 
